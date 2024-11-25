@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+  font-weight: 400;
+        }
+
+        .main{
+            min-height: 100vh;
+            min-width: 100vw;
+            background-color: #81ecec;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .note{
+            height: 400px;
+            width: 400px;
+            background-color: #fff;
+            border-radius: 4px;
+            margin: 15px;
+            margin-top: 55px;
+        }
+
+        .tools{
+            width: 100%;
+            background-color: #2d3436;
+            color: #fff;
+            padding: 7px;
+            display: flex;
+            justify-content: end;
+        }
+
+        .tools i{
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .note textarea{
+            height: 100%;
+            width: 100%;
+            border: none;
+            resize: none;
+            padding: 11px;
+            font-size: 17px;
+        }
+
+        .note textarea:focus{
+            outline: none;
+        }
+
+        #add-btn{
+            position: fixed;
+            right: 10px;
+            top: 10px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background-color: #2d3436;
+            border-radius: 4px;
+            padding: 6px;
+            cursor: pointer;
+        }
+    </style>
+
+<script src="https://kit.fontawesome.com/ca0e859f0c.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <button id="add-btn">
+        Add note
+        <i class="fa-solid fa-plus"></i>
+    </button>
+    <div class="main">
+    </div>
+
+    <script>
+       const addBtn = document.querySelector("#add-btn");
+       const main = document.querySelector(".main") ;
+
+       function saveNotes(){
+        const notes = document.querySelectorAll(".note textarea");
+        const data = [];
+
+        console.log(notes);
+        notes.forEach(
+            function(note){
+                data.push(note.value);
+            }
+        )
+
+        if(data.length === 0){
+            localStorage.removeItem("notes")
+        }else{
+       localStorage.setItem("notes" , JSON.stringify(data));
+        }
+
+       }
+
+
+       addBtn.addEventListener("click" , 
+        function(){
+            addNote();
+        }
+       );
+
+       function addNote(text = ""){
+        const note = document.createElement("div");
+        note.classList.add("note");
+        note.innerHTML = `
+            <div class="tools">
+                <i class="save fa-solid fa-floppy-disk"></i>
+                <i class="trash fa-solid fa-trash-can"></i>
+            </div>
+            <textarea>${text}</textarea>
+        `
+
+        note.querySelector(".trash").addEventListener("click" , function(){
+            note.remove();
+            saveNotes();
+        });
+
+       note.querySelector(".save").addEventListener("click" , function(){
+        saveNotes();
+       })
+
+        main.appendChild(note);
+        saveNotes();
+       }
+
+
+       
+       (
+        function(){
+            const lsNotes = JSON.parse(localStorage.getItem("notes"));
+            if(lsNotes === null){
+                addNote();
+            }else{ lsNotes.forEach(
+            (lsNote) => {
+                addNote(lsNote);
+            }
+
+           )
+        }
+          
+        }
+       )()
+
+    </script>
+</body>
+</html>
